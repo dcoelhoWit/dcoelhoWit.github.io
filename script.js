@@ -16,7 +16,7 @@ const highestEl = document.getElementById('highestEl')
 const startGameBtn = document.getElementById('startGameBtn')
 const modelEl = document.getElementById('modelEl')
 const bigScoreEl = document.getElementById('bigScoreEl')
-const duckImage = document.getElementById("duck")
+const enemyImage = document.getElementById("enemy")
 const playerImage = document.getElementById("player")
 const hint1 = document.getElementById("hint1")
 const hint2 = document.getElementById("hint2")
@@ -48,12 +48,12 @@ class Player {
     ctx.arc(this.x, this.y, this.radius, Math.PI * 2, 0, false)
     ctx.fillStyle = 'rgba(165, 165, 165, 0.6)' 
     ctx.fill()
-    ctx.drawImage(playerImage, this.x.toFixed(5) - (this.radius / 2).toFixed(5), this.y.toFixed(5) - (this.radius / 2).toFixed(5), this.radius, this.radius)
+    ctx.drawImage(playerImage, this.x.toFixed(5) - this.radius.toFixed(5), this.y.toFixed(5) - this.radius.toFixed(5), this.radius * 2, this.radius * 2)
   }
 }
 
-// Duck
-class Duck {
+// Enemy
+class Enemy {
   constructor(x, y, radius, velocity) {
     this.x = x
     this.y = y
@@ -66,7 +66,7 @@ class Duck {
     ctx.arc(this.x, this.y, this.radius, Math.PI * 2, 0, false)
     ctx.fillStyle = 'rgba(255, 165, 0, 0.6)' 
     ctx.fill()
-    ctx.drawImage(duckImage, this.x - (this.radius / 2).toFixed(5), this.y.toFixed(5) - (this.radius / 2).toFixed(5), this.radius, this.radius)
+    ctx.drawImage(enemyImage, this.x.toFixed(5) - this.radius.toFixed(5), this.y.toFixed(5) - this.radius.toFixed(5), this.radius * 2, this.radius * 2)
   }
 
   update() {
@@ -221,7 +221,7 @@ function animate() {
               projectile.x,
               projectile.y,
               Math.random() * 3,
-              'rgba(255, 165, 0, 0.6)',
+              'white',
               {
                 x: (Math.random() - 0.5) * (Math.random() * 9.8 - 0.5),
                 y: (Math.random() - 0.5) * (Math.random() * 9.8 - 0.5),
@@ -293,7 +293,7 @@ function spanEnemies() {
       x = Math.random() * canvas.width
       y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius
     }
-    enemies.push(new Duck(x, y, radius, calculateVelocity(x, y)))
+    enemies.push(new Enemy(x, y, radius, calculateVelocity(x, y)))
     spanEnemies()
   }, spawnTime)
 }

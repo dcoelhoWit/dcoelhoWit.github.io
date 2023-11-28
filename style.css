@@ -31,17 +31,6 @@
         outline: none;
       }
 
-      #hintsContainer {
-        position: absolute;
-        bottom: 3px;
-        width: 100%;
-      }
-
-      #hintsContainer p {
-        display: inline-block;
-        font-size: 25px;
-      }
-
       #modelEl {
         position: fixed;
         top: 0;
@@ -62,6 +51,7 @@
         max-width: 350px;
         padding: 1.5em;
         background: white;
+        border-radius: 25px;
       }
 
       #modelEl h1 {
