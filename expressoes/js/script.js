@@ -8,7 +8,13 @@ function send(level) {
 		destination = "GTE002.html";
 	} else if (level == "GTE002") {
 		correctAnswer = "cair o carmo e a trindade";
-		destination = "GTE002.html";
+		destination = "GTE003.html";
+	} else if (level == "GTE003") {
+		correctAnswer = "pôr paninhos quentes";
+		destination = "GTE004.html";
+	} else if (level == "GTE004") {
+		correctAnswer = "nem que a vaca tussa";
+		destination = "waiting.html";
 	}
 
 	if (input.toUpperCase() == correctAnswer.toUpperCase()) {
