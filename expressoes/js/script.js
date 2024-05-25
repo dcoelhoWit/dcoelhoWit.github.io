@@ -31,9 +31,9 @@ function send(level) {
 		destination = "waiting.html";
 	}
 
-	if (input.toUpperCase() == correctAnswer.toUpperCase() 
-		|| input.toUpperCase() == correctAnswer2.toUpperCase() 
-		|| input.toUpperCase() == correctAnswer3.toUpperCase()) {
+	if (input.toUpperCase().includes(correctAnswer.toUpperCase()) 
+		|| input.toUpperCase().includes(correctAnswer2.toUpperCase()) 
+		|| input.toUpperCase().includes(correctAnswer3.toUpperCase())) {
 
 		window.location.href = destination;
 	} else {
