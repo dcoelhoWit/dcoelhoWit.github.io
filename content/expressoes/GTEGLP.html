@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Adivinha a expressao</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel="stylesheet" href="./style/main.css">
+  <link rel="stylesheet" href="./style/inputGroup.css">
+  <link rel="stylesheet" href="./style/glowButton.css">
+  <link rel="icon" type="image/x-icon" href="./images/favicon.ico"/>
+</head>
+
+<body>
+  <div id="mainBody" style="opacity:0;">
+    <script src="./js/script.js"></script>
+    <div class="container">
+      <img src="./images/GTEGLP.png" class="img-frame" alt="" />
+      <br/>
+      <br/>
+      <div class="input-group">
+        <label class="input-group__label" for="myInput">Qual é a expressão?</label>
+        <input type="text" id="myInput" class="input-group__input" value="" />
+      </div>
+      <br/>
+      <button class="glow-on-hover" type="button" onclick="send('GTEGLP');">ENVIAR</button>
+    </div>
+  </div>
+</body>
+
+</html>
