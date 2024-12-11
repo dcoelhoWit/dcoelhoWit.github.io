@@ -1,19 +1,66 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
+import { 
+    getFirestore,
+    collection,
+    addDoc,
+    query,
+    doc,
+    getDocs,
+    getDoc 
+} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBFHpJUSRRujKzFZHSusYhsDfOMSdMoO1k",
-  authDomain: "flappy-santa-a187e.firebaseapp.com",
-  projectId: "flappy-santa-a187e",
-  storageBucket: "flappy-santa-a187e.firebasestorage.app",
-  messagingSenderId: "468750582462",
-  appId: "1:468750582462:web:892589cb7799957b2e54ef",
-  measurementId: "G-3V595RQ7EP"
+    apiKey: "AIzaSyBFHpJUSRRujKzFZHSusYhsDfOMSdMoO1k",
+    authDomain: "flappy-santa-a187e.firebaseapp.com",
+    projectId: "flappy-santa-a187e",
+    storageBucket: "flappy-santa-a187e.firebasestorage.app",
+    messagingSenderId: "468750582462",
+    appId: "1:468750582462:web:892589cb7799957b2e54ef",
+    measurementId: "G-3V595RQ7EP"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+class ScoreEntry {
+    constructor (player, score ) {
+        this.player = player;
+        this.score = score;
+    }
+    toString() {
+        return this.player + ', ' + this.score;
+    }
+}
+
+// Firestore data converter
+const scoreEntryConverter = {
+    toFirestore: (score) => {
+        return {
+            player: score.player,
+            score: score.score
+        };
+    },
+    fromFirestore: (snapshot, options) => {
+        const data = snapshot.data(options);
+        return new City(data.name, data.state, data.country);
+    }
+};
+
+export function sendScore() {
+  db.collection("scores").add({
+    player: "John Smith",
+    score: 12
+})
+  .then((docRef) => {
+    console.log("Document written with ID: ", docRef.id);
+})
+  .catch((error) => {
+    console.error("Error adding document: ", error);
+});
+}
+
+/*----------*/
 
 const RAD = Math.PI / 180;
 const scrn = document.getElementById("canvas");
@@ -136,6 +183,7 @@ const pipe = {
     }
   },
 };
+
 const bird = {
   animations: [
     { sprite: new Image() },
@@ -234,6 +282,7 @@ const bird = {
     }
   },
 };
+
 const UI = {
   getReady: { sprite: new Image() },
   gameOver: { sprite: new Image() },
@@ -327,30 +376,6 @@ SFX.flap.src = "sfx/sleigh.wav";
 SFX.score.src = "sfx/score.wav";
 SFX.hit.src = "sfx/hit.wav";
 SFX.die.src = "sfx/die.wav";
-
-function sendScore() {
-  /*
-  try {
-    const docRef = await addDoc(collection(db, "scores"), { 
-      playerName: "TestingScore",
-      score: 999
-    });
-    console.log("Document written with ID: ", docRef.id);
-  } catch (e) {
-    console.error("Error adding document: ", e);
-  }
-  */
-  db.collection("scores").add({
-    player: "Player A",
-    score: 999
-  })
-  .then((docRef) => {
-    console.log("Document written with ID: ", docRef.id);
-  })
-  .catch((error) => {
-    console.error("Error adding document: ", error);
-  });
-}
 
 function gameLoop() {
   update();
