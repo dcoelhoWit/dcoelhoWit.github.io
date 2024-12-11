@@ -1,0 +1,20 @@
+/** 
+ * ---- VERTICAL MENU -----
+ */
+
+#vertical-menu {
+  list-style-type: none;
+  padding: 10;
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+#vertical-menu li a {
+  display: block;
+  color: white;
+  padding: 16px;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s;
+}

@@ -1,9 +1,48 @@
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBFHpJUSRRujKzFZHSusYhsDfOMSdMoO1k",
+  authDomain: "flappy-santa-a187e.firebaseapp.com",
+  projectId: "flappy-santa-a187e",
+  storageBucket: "flappy-santa-a187e.firebasestorage.app",
+  messagingSenderId: "468750582462",
+  appId: "1:468750582462:web:892589cb7799957b2e54ef",
+  measurementId: "G-3V595RQ7EP"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const RAD = Math.PI / 180;
 const scrn = document.getElementById("canvas");
 const sctx = scrn.getContext("2d");
 scrn.tabIndex = 1;
 scrn.addEventListener("click", () => {
   switch (state.curr) {
+  case state.getReady:
+    state.curr = state.Play;
+    SFX.start.play();
+    break;
+  case state.Play:
+    bird.flap();
+    break;
+  case state.gameOver:
+    state.curr = state.getReady;
+    bird.speed = 0;
+    bird.y = 100;
+    pipe.pipes = [];
+    UI.score.curr = 0;
+    SFX.played = false;
+    break;
+  }
+});
+
+scrn.onkeydown = function keyDown(e) {
+  if (e.keyCode == 32 || e.keyCode == 87 || e.keyCode == 38) {
+    // Space Key or W key or arrow up
+    switch (state.curr) {
     case state.getReady:
       state.curr = state.Play;
       SFX.start.play();
@@ -19,28 +58,6 @@ scrn.addEventListener("click", () => {
       UI.score.curr = 0;
       SFX.played = false;
       break;
-  }
-});
-
-scrn.onkeydown = function keyDown(e) {
-  if (e.keyCode == 32 || e.keyCode == 87 || e.keyCode == 38) {
-    // Space Key or W key or arrow up
-    switch (state.curr) {
-      case state.getReady:
-        state.curr = state.Play;
-        SFX.start.play();
-        break;
-      case state.Play:
-        bird.flap();
-        break;
-      case state.gameOver:
-        state.curr = state.getReady;
-        bird.speed = 0;
-        bird.y = 100;
-        pipe.pipes = [];
-        UI.score.curr = 0;
-        SFX.played = false;
-        break;
     }
   }
 };
@@ -98,7 +115,7 @@ const pipe = {
         this.bot.sprite,
         p.x,
         p.y + parseFloat(this.top.sprite.height) + this.gap
-      );
+        );
     }
   },
   update: function () {
@@ -125,7 +142,7 @@ const bird = {
     { sprite: new Image() },
     { sprite: new Image() },
     { sprite: new Image() },
-  ],
+    ],
   rotatation: 0,
   x: 50,
   y: 100,
@@ -145,38 +162,39 @@ const bird = {
   update: function () {
     let r = parseFloat(this.animations[0].sprite.width) / 2;
     switch (state.curr) {
-      case state.getReady:
-        this.rotatation = 0;
-        this.y += frames % 10 == 0 ? Math.sin(frames * RAD) : 0;
-        this.frame += frames % 10 == 0 ? 1 : 0;
-        break;
-      case state.Play:
-        this.frame += frames % 5 == 0 ? 1 : 0;
+    case state.getReady:
+      this.rotatation = 0;
+      this.y += frames % 10 == 0 ? Math.sin(frames * RAD) : 0;
+      this.frame += frames % 10 == 0 ? 1 : 0;
+      break;
+    case state.Play:
+      this.frame += frames % 5 == 0 ? 1 : 0;
+      this.y += this.speed;
+      this.setRotation();
+      this.speed += this.gravity;
+      if (this.y + r >= gnd.y || this.collisioned()) {
+        state.curr = state.gameOver;
+        this.sendScore();
+      }
+
+      break;
+    case state.gameOver:
+      this.frame = 1;
+      if (this.y + r < gnd.y) {
         this.y += this.speed;
         this.setRotation();
-        this.speed += this.gravity;
-        if (this.y + r >= gnd.y || this.collisioned()) {
-          state.curr = state.gameOver;
+        this.speed += this.gravity * 2;
+      } else {
+        this.speed = 0;
+        this.y = gnd.y - r;
+        this.rotatation = 90;
+        if (!SFX.played) {
+          SFX.die.play();
+          SFX.played = true;
         }
+      }
 
-        break;
-      case state.gameOver:
-        this.frame = 1;
-        if (this.y + r < gnd.y) {
-          this.y += this.speed;
-          this.setRotation();
-          this.speed += this.gravity * 2;
-        } else {
-          this.speed = 0;
-          this.y = gnd.y - r;
-          this.rotatation = 90;
-          if (!SFX.played) {
-            SFX.die.play();
-            SFX.played = true;
-          }
-        }
-
-        break;
+      break;
     }
     this.frame = this.frame % this.animations.length;
   },
@@ -231,24 +249,24 @@ const UI = {
   frame: 0,
   draw: function () {
     switch (state.curr) {
-      case state.getReady:
-        this.y = parseFloat(scrn.height - this.getReady.sprite.height) / 2;
-        this.x = parseFloat(scrn.width - this.getReady.sprite.width) / 2;
-        this.tx = parseFloat(scrn.width - this.tap[0].sprite.width) / 2;
-        this.ty =
-          this.y + this.getReady.sprite.height - this.tap[0].sprite.height;
-        sctx.drawImage(this.getReady.sprite, this.x, this.y);
-        sctx.drawImage(this.tap[this.frame].sprite, this.tx, this.ty);
-        break;
-      case state.gameOver:
-        this.y = parseFloat(scrn.height - this.gameOver.sprite.height) / 2;
-        this.x = parseFloat(scrn.width - this.gameOver.sprite.width) / 2;
-        this.tx = parseFloat(scrn.width - this.tap[0].sprite.width) / 2;
-        this.ty =
-          this.y + this.gameOver.sprite.height - this.tap[0].sprite.height;
-        sctx.drawImage(this.gameOver.sprite, this.x, this.y);
-        sctx.drawImage(this.tap[this.frame].sprite, this.tx, this.ty);
-        break;
+    case state.getReady:
+      this.y = parseFloat(scrn.height - this.getReady.sprite.height) / 2;
+      this.x = parseFloat(scrn.width - this.getReady.sprite.width) / 2;
+      this.tx = parseFloat(scrn.width - this.tap[0].sprite.width) / 2;
+      this.ty =
+      this.y + this.getReady.sprite.height - this.tap[0].sprite.height;
+      sctx.drawImage(this.getReady.sprite, this.x, this.y);
+      sctx.drawImage(this.tap[this.frame].sprite, this.tx, this.ty);
+      break;
+    case state.gameOver:
+      this.y = parseFloat(scrn.height - this.gameOver.sprite.height) / 2;
+      this.x = parseFloat(scrn.width - this.gameOver.sprite.width) / 2;
+      this.tx = parseFloat(scrn.width - this.tap[0].sprite.width) / 2;
+      this.ty =
+      this.y + this.gameOver.sprite.height - this.tap[0].sprite.height;
+      sctx.drawImage(this.gameOver.sprite, this.x, this.y);
+      sctx.drawImage(this.tap[this.frame].sprite, this.tx, this.ty);
+      break;
     }
     this.drawScore();
   },
@@ -256,33 +274,33 @@ const UI = {
     sctx.fillStyle = "#FFFFFF";
     sctx.strokeStyle = "#000000";
     switch (state.curr) {
-      case state.Play:
-        sctx.lineWidth = "2";
-        sctx.font = "35px Squada One";
-        sctx.fillText(this.score.curr, scrn.width / 2 - 5, 50);
-        sctx.strokeText(this.score.curr, scrn.width / 2 - 5, 50);
-        break;
-      case state.gameOver:
-        sctx.lineWidth = "2";
-        sctx.font = "40px Squada One";
-        let sc = `SCORE :     ${this.score.curr}`;
-        try {
-          this.score.best = Math.max(
-            this.score.curr,
-            localStorage.getItem("best")
+    case state.Play:
+      sctx.lineWidth = "2";
+      sctx.font = "35px Squada One";
+      sctx.fillText(this.score.curr, scrn.width / 2 - 5, 50);
+      sctx.strokeText(this.score.curr, scrn.width / 2 - 5, 50);
+      break;
+    case state.gameOver:
+      sctx.lineWidth = "2";
+      sctx.font = "40px Squada One";
+      let sc = `SCORE :     ${this.score.curr}`;
+      try {
+        this.score.best = Math.max(
+          this.score.curr,
+          localStorage.getItem("best")
           );
-          localStorage.setItem("best", this.score.best);
-          let bs = `BEST  :     ${this.score.best}`;
-          sctx.fillText(sc, scrn.width / 2 - 80, scrn.height / 2 + 0);
-          sctx.strokeText(sc, scrn.width / 2 - 80, scrn.height / 2 + 0);
-          sctx.fillText(bs, scrn.width / 2 - 80, scrn.height / 2 + 30);
-          sctx.strokeText(bs, scrn.width / 2 - 80, scrn.height / 2 + 30);
-        } catch (e) {
-          sctx.fillText(sc, scrn.width / 2 - 85, scrn.height / 2 + 15);
-          sctx.strokeText(sc, scrn.width / 2 - 85, scrn.height / 2 + 15);
-        }
+        localStorage.setItem("best", this.score.best);
+        let bs = `BEST  :     ${this.score.best}`;
+        sctx.fillText(sc, scrn.width / 2 - 80, scrn.height / 2 + 0);
+        sctx.strokeText(sc, scrn.width / 2 - 80, scrn.height / 2 + 0);
+        sctx.fillText(bs, scrn.width / 2 - 80, scrn.height / 2 + 30);
+        sctx.strokeText(bs, scrn.width / 2 - 80, scrn.height / 2 + 30);
+      } catch (e) {
+        sctx.fillText(sc, scrn.width / 2 - 85, scrn.height / 2 + 15);
+        sctx.strokeText(sc, scrn.width / 2 - 85, scrn.height / 2 + 15);
+      }
 
-        break;
+      break;
     }
   },
   update: function () {
@@ -309,6 +327,18 @@ SFX.flap.src = "sfx/sleigh.wav";
 SFX.score.src = "sfx/score.wav";
 SFX.hit.src = "sfx/hit.wav";
 SFX.die.src = "sfx/die.wav";
+
+function sendScore() {
+  try {
+    const docRef = await addDoc(collection(db, "scores"), { 
+      playerName: "TestingScore",
+      score: 999
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
 
 function gameLoop() {
   update();

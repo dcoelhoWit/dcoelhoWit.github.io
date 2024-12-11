@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Flappy Santa</title>
+	<link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+	<link rel="stylesheet" href="style.css" > 
+	<link href="https://fonts.googleapis.com/css?family=Squada+One&display=swap" rel="stylesheet">
+</head>
+<body>
+	<div class="content">
+		<ul class="team">
+			<div id="myHTMLWrapper">
+				<script type="module">
+					import { initializeApp } from "firebase/app";
+					import { getFirestore, collection, addDoc } from "firebase/firestore";
+
+					const firebaseConfig = {
+						apiKey: "AIzaSyBFHpJUSRRujKzFZHSusYhsDfOMSdMoO1k",
+						authDomain: "flappy-santa-a187e.firebaseapp.com",
+						projectId: "flappy-santa-a187e",
+						storageBucket: "flappy-santa-a187e.firebasestorage.app",
+						messagingSenderId: "468750582462",
+						appId: "1:468750582462:web:892589cb7799957b2e54ef",
+						measurementId: "G-3V595RQ7EP"
+					};
+
+					// Initialize Firebase
+					const app = initializeApp(firebaseConfig);
+					const db = getFirestore(app);
+
+					var wrapper = document.getElementById("myHTMLWrapper");
+					var myHTML = ''
+
+					const querySnapshot = await getDocs(collection(db, "scores"));
+					querySnapshot.forEach((doc) => {
+						console.log(`${doc.id} => ${doc.data()}`);
+						myHTML += '<li class="member co-funder"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#1</h3><p class="whiteText">Score: 15<br><a href="">Diogo</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li>'
+					});
+
+					/*
+					var myHTML = '<li class="member co-funder"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#1</h3><p class="whiteText">Score: 15<br><a href="">Diogo</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li><li class="member"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#2</h3><p class="whiteText">Score: 10<br><a href="">Jorge</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li>';
+					*/
+
+				wrapper.innerHTML = myHTML
+			</script>
+		</ul>
+	</div>
+</body>
+</html>
