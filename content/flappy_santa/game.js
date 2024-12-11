@@ -329,6 +329,7 @@ SFX.hit.src = "sfx/hit.wav";
 SFX.die.src = "sfx/die.wav";
 
 function sendScore() {
+  /*
   try {
     const docRef = await addDoc(collection(db, "scores"), { 
       playerName: "TestingScore",
@@ -338,6 +339,17 @@ function sendScore() {
   } catch (e) {
     console.error("Error adding document: ", e);
   }
+  */
+  db.collection("scores").add({
+    player: "Player A",
+    score: 999
+  })
+  .then((docRef) => {
+    console.log("Document written with ID: ", docRef.id);
+  })
+  .catch((error) => {
+    console.error("Error adding document: ", error);
+  });
 }
 
 function gameLoop() {
