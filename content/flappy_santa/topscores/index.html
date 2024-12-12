@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -17,7 +17,7 @@
 					import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
 					import { 
 						getFirestore,
-						collection,
+						collection, 
 						addDoc,
 						query,
 						doc,
@@ -59,7 +59,7 @@
 						},
 						fromFirestore: (snapshot, options) => {
 							const data = snapshot.data(options);
-							return new City(data.name, data.state, data.country);
+							return new ScoreEntry(data.player, data.score);
 						}
 					};
 
@@ -77,7 +77,11 @@
 						const scorePlayerName = snap.data().player;
 						const scoreValue = snap.data().score;
 
-						myHTML += '<li class="member co-funder"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#' + index + '</h3><p class="whiteText">Score: ' + scoreValue + '<br><a href="">' + scorePlayerName + '</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li>'
+						if (index == 1) {
+							myHTML += '<li class="member co-funder"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#' + index + '</h3><p class="whiteText">Score: ' + scoreValue + '<br><a href="">' + scorePlayerName + '</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li>'
+						} else {
+							myHTML += '<li class="member"><div class="thumb"><img src="https://img.freepik.com/premium-vector/flat-santa-claus-christmas-avatar-icon-vector-illustration-isolated-white-background_1035836-2.jpg"></div><div class="description"><h3>#' + index + '</h3><p class="whiteText">Score: ' + scoreValue + '<br><a href="">' + scorePlayerName + '</a></p><p class="invisible">Alex is a full stack developer. Alex does JavaScript development for CodePen, both front end and back, and just about everything else.</p></div></li>'
+						}
 
 						index++;
 					});
