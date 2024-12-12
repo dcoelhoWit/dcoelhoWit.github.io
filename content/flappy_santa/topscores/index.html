@@ -22,7 +22,8 @@
 						query,
 						doc,
 						getDocs,
-						getDoc 
+						getDoc,
+						orderBy 
 					} from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
 					const firebaseConfig = {
@@ -68,12 +69,11 @@
 
 					const scoresQuery = query(
 						collection(db, 'scores'),
+						orderBy("score")
 					);
 					const querySnapshot = await getDocs(scoresQuery);
 					var index = 1;
 					querySnapshot.forEach((snap) => {
-						console.log("[DC] ", snap.data());
-
 						const scorePlayerName = snap.data().player;
 						const scoreValue = snap.data().score;
 
