@@ -69,7 +69,7 @@
 
 					const scoresQuery = query(
 						collection(db, 'scores'),
-						orderBy("score")
+						orderBy("score", "desc")
 					);
 					const querySnapshot = await getDocs(scoresQuery);
 					var index = 1;
