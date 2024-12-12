@@ -66,7 +66,6 @@
         bird.flap();
         break;
       case state.gameOver:
-        sendScore();
         state.curr = state.getReady;
         bird.speed = 0;
         bird.y = 100;
@@ -213,6 +212,7 @@
           this.speed += this.gravity;
           if (this.y + r >= gnd.y || this.collisioned()) {
             state.curr = state.gameOver;
+            sendScore();
           }
 
           break;
