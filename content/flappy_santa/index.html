@@ -19,8 +19,8 @@
       addDoc,
       query,
       doc,
-      getDocs,
-      getDoc 
+      getDoc,
+      setDoc
     } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -37,17 +37,53 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    class ScoreEntry {
+      constructor (player, score ) {
+        this.player = player;
+        this.score = score;
+      }
+      toString() {
+        return this.player + ', ' + this.score;
+      }
+    }
+
+    // Firestore data converter
+    const scoreEntryConverter = {
+      toFirestore: (score) => {
+        return {
+          player: score.player,
+          score: score.score
+        };
+      },
+      fromFirestore: (snapshot, options) => {
+        const data = snapshot.data(options);
+        return new ScoreEntry(data.player, data.score);
+      }
+    };
+
     // Extract GET parameter
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     var playername = ""
     playername = urlParams.get('playername')
 
-    function sendScore() {
-      addDoc(collection(db, "scores"), {
-        player: playername,
-        score: UI.score.curr
-      });
+    async function sendScore() {
+      const docRef = doc(db, "scores", playername);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        if (UI.score.curr > docSnap.data().score) {
+          await setDoc(doc(db, "scores", playername), {
+            player: playername,
+            score: UI.score.curr
+          });
+        }
+      } else {
+        await setDoc(doc(db, "scores", playername), {
+          player: playername,
+          score: UI.score.curr
+        });
+      }
     }
 
     /*----------*/
